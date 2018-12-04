@@ -1,0 +1,27 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\begin{document}
+
+\thispagestyle{empty}
+\begin{center}
+
+\vspace{3cm}
+
+\textsc{\Large École d'actuariat}\\
+\textsc{\Large Université Laval}\\[0.5cm]
+
+\vspace{5cm}
+
+{ \LARGE \bfseries TP2  \\ }
+
+\vfill
+
+\Large Guillaume \textsc{Michel}\\
+\Large Olivier \textsc{Turcotte}\\
+\textsc{Équipe XX}\\
+\vspace{3cm}
+{\Large \textsc{Automne} 2018}
+
+\end{center}
+\end{document}
