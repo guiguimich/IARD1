@@ -9,7 +9,8 @@ knitr::opts_chunk$set(echo = TRUE)
 # Numéro 1
 
 ## a)
-On sait que
+Avant d'ajuster le modèle, il est important de dériver, à l'aide de la méthode  de vraisemblance, les formules qui permettront d'estimer les paramètres de la loi log normale à partir des données.Tout d'abort, on sait que
+
 $$
 X \sim LN(\mu,\sigma^2)
 $$
@@ -20,7 +21,7 @@ $$
 La formule de la vraisemblance est donc la suivante:
 $$
 \begin{aligned}
-L(\mu,\sigma) =& \prod_{i=1}^{n} f(x_{i};\mu,\sigma^2)\\
+L(\mu,\sigma^2) =& \prod_{i=1}^{n} f(x_{i};\mu,\sigma^2)\\
 =& \prod_{i=1}^{n} \frac{1}{x_{i}\sqrt{2\pi\sigma^2}}\exp({- \frac{(ln(x_{i})-\mu)^2}{2\sigma^{2}}})\\
 =& \frac{1}{(2\pi\sigma^2)^{n/2}} \prod_{i=1}^{n} \left\{\frac{1}{x_{i}}\right\}\exp^{-\frac{1}{2} \sum_{i=1}^{n} \frac{(ln(x_{i})-\mu)^2}{\sigma^{2}}}\\
 \end{aligned}
@@ -28,7 +29,7 @@ $$
 Donc la log-vraisemblance est la suivante : 
 $$
 \begin{aligned}
-l(\mu,\sigma) =& -\frac{n}{2}\ln{(2\pi\sigma^2)} - \sum_{i=1}^{n}\ln{(x_{i})} - \frac{\sum_{i=1}^{n}(\ln{(x_{i})}- \mu)^2}{2\sigma^2}\\
+l(\mu,\sigma^2) =& -\frac{n}{2}\ln{(2\pi\sigma^2)} - \sum_{i=1}^{n}\ln{(x_{i})} - \frac{\sum_{i=1}^{n}(\ln{(x_{i})}- \mu)^2}{2\sigma^2}\\
 =& -\frac{n}{2}\ln{(2\pi\sigma^2)} - \sum_{i=1}^{n}\ln{(x_{i})} - \frac{\sum_{i=1}^{n}[\ln{(x_{i})}^2-2\ln{(x_i)}\mu+ \mu^2]}{2\sigma^2}\\
 =& -\frac{n}{2}\ln{(2\pi\sigma^2)} - \sum_{i=1}^{n}\ln{(x_{i})} - \frac{\sum_{i=1}^{n}\ln{(x_i)}^2}{2\sigma^2} + \frac{\sum_{i=1}^{n}\ln{(x_i)}\mu}{\sigma^2} - \frac{n\mu^2}{2\sigma^2}\\
 \end{aligned}
@@ -58,14 +59,14 @@ $$
 \rightarrow \hat\sigma^2 =& \frac{\sum_{i=1}^{n}[\ln{(x_{i})}-\hat\mu]^2}{n} \text{, avec  } \hat\mu \text{  trouvé précédemment }
 \end{aligned}
 $$
-Il est assumé ici qu'il s'agit bel et bien d'un maximum.
+Il est assumé ici qu'il s'agit bel et bien d'un maximum. Il est donc maintenant possible de calculer les estimés des paramètres pour cette question.
 
-Voici le jeu de données fournies pour ce numéro: 
+Le jeu de données fournies pour ce numéro est le suivant: 
 ```{r}
 data <- c(1500,6000,3500,3800,1800,5500,4800,4200,3900,3000)
 ```
 
-Avec les estimateurs trouvés précédemment on trouve $\hat\mu$ et $\hat\sigma$ avec :
+À l'aide des formules trouvées précédemment ainsi que du code R suivant, il est possible de trouver $\hat\mu$ et $\hat\sigma$.
 
 ```{r}
 n <- length(data)
@@ -73,11 +74,11 @@ mu <- sum(log(data))/n
 sigma.2 <- sum((log(data)-mu)^2)/n
 sigma <- sqrt(sigma.2)
 ```
-Ce qui donne les valeurs suivantes : $\mu$ = `r mu`, $\sigma$ = `r sigma`.
+Les valeurs suivantes sont donc obtenues : $\hat\mu$ = `r mu`, $\hat\sigma$ = `r sigma`.
 
 ## b)
 
-On trouve $E[(X-d)_+]$ avec :
+Tout d'abort, il est possible de trouver la valeur  $E[(X-d)_+]$ de la façon suivante: 
 
 $$
 \text{Par définition, } X = e^Y\text{où} Y \sim N(\mu,\sigma^2)\text{. Posons } Y = \sigma Z + \mu .\\\\
@@ -101,7 +102,7 @@ $$
 \end{aligned}
 $$
 
-Qui se traduit en code de la façon suivante:
+Or, il est possible d'obtenir les valeurs plus facilement à l'aide de R et du suivant:
 
 
 ```{r}
@@ -113,7 +114,7 @@ stop_loss <- function(d,mu,sigma) {
 
 ```
 
-En exécutant ce code pour les valeurs de $d \in \{2000,2100,\dots,3000\}$,on obtient les valeurs ci-dessous:
+Ce qui permet d'obtenir, pour les valeurs de $d \in \{2000,2100,\dots,3000\}$, les résultats suivants:
 ```{r,include = F}
 library(stargazer)
 clean_star <- function(...){
@@ -145,17 +146,17 @@ $3,000$ & $1,091.461$ \\
 \end{tabular}
 \end{table}
 
-SVP VOS COMMENTAIRES . AL
+On constate que dans un optique d'assurance, plus la valeur minimale du seuil des réclamations assurable est petite, plus l'espérance des coûts de l'assureur est grande car celui-ci s'attendra à payer davantage de réclamations que si le seuil des réclamations assurable était plus élevé. Ce constat est logique et est en accord avec les résultats empiriques calculés en d).
 
 ## c)
 
-On trouve la formule analytique de $E[\max(X,u)]$ comme suit:
+On trouve la formule analytique de $E[\min(X,u)]$ comme suit:
 
 $$
 E[\min(X,u)] = E[X] - E[\max(X-d,0)] = \dots = e^{\mu + \frac{\sigma^2}{2}}\Phi(\frac{\ln u - \mu - \sigma^2}{\sigma})+u*(1-\Phi(\frac{\ln u - \mu}{\sigma}))
 $$
 
-Ce qui se calcule de la façon suivante en R:
+Or, il est possible de se servir du code R suivant pour parvenir aux différents résultats:
 ```{r}
 limited_loss <- function(x,mu,sigma) {
     exp(mu+sigma^2/2)*
@@ -163,7 +164,7 @@ limited_loss <- function(x,mu,sigma) {
         x*(1-pnorm((log(x)-mu)/sigma))
 }
 ```
-
+\newpage
 En calculant la prime limité pour les valeurs de $u \in \{3000,3100,\dots,4000\}$, on obtient les valeurs ci-dessous:
 
 \begin{table}[!htbp] \centering 
@@ -171,7 +172,7 @@ En calculant la prime limité pour les valeurs de $u \in \{3000,3100,\dots,4000\
   \label{} 
 \begin{tabular}{@{\extracolsep{5pt}} cc} 
 \\[-1.8ex]\hline 
-$u$ & $E[\max(X,u)]$\\
+$u$ & $E[\min(X,u)]$\\
 \hline \\[-1.8ex] 
 $3,000$ & $2,748.983$ \\ 
 $3,100$ & $2,811.717$ \\ 
@@ -188,12 +189,11 @@ $4,000$ & $3,253.276$ \\
 \end{tabular} 
 \end{table} 
 
-SVP VOS COMMENTAIRES . AL
-\newpage
+On constate que, dans un optique d'assurance toujours, si l'assureur augmente le montant maximal (montant plafond) des sommes à versés aux assurés, alors l'espérance des coûts de l'assureur augmentera par rapport à une valeur plafond moindre car l'assureur aura a payer certaines réclamations dépassant l'ancien plafond.
 
 ## d)
 
-Afin d'obtenir une estimation de l'espérance de $X$, il est possible en R de simuler $n$ fois la densité de $X$ puis de faire la moyenne empirique de la simulation. Cette méthodologie est dérivé de la loi forte des grands nombres qui stipule que $P(\lim_{n\to \infty}\sum_{i=1}^nX_i = E[X]) = 1$. Ainsi, on applique la méthodologie pour $n \in \{1\times 10^5,5 \times 10^5,1 \times 10^6\}$ avec le code qui suit :
+Afin d'obtenir une estimation de la prime stop-loss de $X$, il est possible en R de simuler $n$ fois la densité de $X$ puis de trouver la valeur  empirique de la prime stop-loss. Cette méthodologie est dérivé de la loi forte des grands nombres. Ainsi, on applique la méthodologie pour $n \in \{1\times 10^5,5 \times 10^5,1 \times 10^6\}$ avec le code qui suit :
 
 ```{r}
 n <- c(1e5,5e5,1e6)
@@ -213,11 +213,27 @@ Valeur de $E[(X-2000)_+]$ & $1,878.488$ & $1,874.386$ & $1,872.792$
 \end{tabular} 
 \end{table}
 
+Ce qui est en accord avec les résultats théoriques trouvés en b).De plus, il est possible de remarquer que plus la taille de l'échantillon est grande, plus la valeur empirique est près de la théorie. Or, ceci s'explique par la loi des grands nombres.Ainsi, avec un échantillon de taille m = 1 million , l'approximation est très bonne.
+
 
 \newpage
 # Numéro 2
 
 ## a)
+Dans ce numéro, il est question de données groupées. Afin d'estimer les paramètres de la distribution à l'aide de la méthode de vraisemblance et des données groupées, un peu de théorie est nécessaire. Il est connu que le maximum de vraisemblance des données groupées est le suivant: 
+$$
+L(\theta) = \prod_{i=1}^{n}\left[F(x_{i};\theta) - F(x_{i-1};\theta)\right]^{n_{i}}
+$$
+d'où la log-vraisemblance est la suivante : 
+$$
+l(\theta)= \sum_{i=1}^{n} n_{i} \ln{\left[F(x_{i};\theta) - F(x_{i-1};\theta)\right]}
+$$
+
+À noter, que le maximum de vraisemblance sera calculé numeriquement à l'aide d'un programme informatique d'où il n'est pas nécessaire de développer entièrement la formule. Si celle-ci devait être développé, une méthode similaire au numéro 1 a) devrait être utilisée, mais cette fois-ci avec la formule de log-vraisemblance de données groupées.
+
+
+*Bonus: Voici une fonction que nous avons créer en R afin de calculer le maximum de vraisemblance.
+Celle-ci donne les mêmes résultats que le code SAS plus bas.
 
 ### En R:
 ```{r,include = F}
@@ -251,15 +267,15 @@ values <- c(mu.int[coord[2]],sigma.int[coord[1]])
 values
 ```
 \newpage
-### En SAS :
+Voici donc le tableau SAS des estimés des paramètres obtenues (voir code en annexe au besoin):
 
 ![](sassuce.png){
 height=95% }
 \newpage
-Ainsi, en se fiant à SAS, on obtient les valeurs de $\hat\mu = 6.8418$, $\hat\sigma = 0.8278$.
+Ainsi, en se fiant à SAS, on obtient les valeurs des paramètres sont de $\hat\mu = 6.8418$ et $\hat\sigma = 0.8278$.
 
 ## b)
-On réutilise le code du numéro 1 afin d'obtenir les valeurs suivantes pour $E[(X-d)_+],d \in \{2000,2100,\dots,3000\}$:
+On réutilise le code et la théorie du  numéro 1,mais cette fois-ci avec les paramètres calculés à l'aide de données groupées. Ceci permet d'obtenir les valeurs suivantes pour $E[(X-d)_+],d \in \{2000,2100,\dots,3000\}$:
 
 \begin{table}[!htbp] \centering 
   \caption{} 
@@ -282,12 +298,12 @@ $3,000$ & $131.722$ \\
 \hline \\[-1.8ex] 
 \end{tabular} 
 \end{table}
-\newpage
 
+On constate la même chose qu'au numéro 1 b), soit que dans un optique d'assurance, plus la valeur minimale du seuil des réclamations assurable est petite, plus l'espérance des coûts de l'assureur est grande car celui-ci s'attendra à payer davantage de réclamations que si le seuil des réclamations assurable était plus élevé. Ce constat est logique et est confirmé avec les valeurs théoriques ci-dessus.
 
 ## c)
 
-Toujours avec le code du numéro 1, on obtient les valeurs théoriques suivantes pour $E[\min(X,u)], u \in \{ 3000,3100,\dots,4000\}$
+Toujours avec le code et la théorie du numéro 1, mais avec les nouveaux paramètres, il est possible d'obtenir les valeurs théoriques suivantes pour $E[\min(X,u)], u \in \{ 3000,3100,\dots,4000\}$
 \begin{table}[!htbp] \centering 
   \caption{} 
   \label{} 
@@ -310,55 +326,103 @@ $4,000$ & $1,243.952$ \\
 \end{tabular} 
 \end{table}
 
+On constate la même chose qu'au numéro 1 c), soit que, dans un optique d'assurance toujours, si l'assureur augmente le montant maximal (montant plafond) des sommes à versés aux assurés, alors l'espérance des coûts de l'assureur augmentera par rapport à une valeur plafond moindre car l'assureur aura a payer certaines réclamations dépassant l'ancien plafond.
+
+\newpage
+
 # Numéro 3
 
 ## a)
+Certaines manipulations mathématiques sont nécessaires afin de parvenir au maximum de vraisemblance de $\Theta$ : 
+On sait que 
 $$
 \begin{aligned}
-f_{X,\Theta}(x,\theta) &= f_{X|\Theta}(x,\theta)f_\Theta(\theta) \\
-&=\binom{1+x}{x}\theta^2(1-\theta)^x\frac{1}{B(2,2)}\theta(1-\theta)\\
-&=\binom{1+x}{x}\theta^3(1-\theta)^{x+1}\frac{1}{B(2,2)}\\
-\rightarrow l(\theta) &= \sum_{i=1}^n \log f_{X,\Theta}(x_i,\theta) \\
-&= \log f_{X,\Theta}(x_1,\theta)\,\text{Car un seul X}\\
-&= \log  \binom{1 + x}{x} +3 \log \theta + (x+1) \log (1-\theta) - \log B(2,2)\\
-\rightarrow \frac{d}{d\theta} l(\theta) &= \frac{3}{\theta} - \frac{x+1}{1-\theta} = 0\\
-\rightarrow \theta &= \frac{3}{4+x} = \frac{3}{9}
+f_{X|\Theta}(x_{i}|\theta) &= \binom{2 + x_{i} - 1}{x_{i}} \theta^2(1-\theta)^{x_{i}}\\
+\rightarrow l(\theta) &= \sum_{i=1}^n \log f_{X|\Theta}(x_i|\theta) \\
+&= \log f_{X|\Theta}(x_1|\theta)\\
 \end{aligned}
 $$
+Dans notre cas,il y a un seul X
+
+$$
+\begin{aligned}
+\rightarrow l(\theta) &= \log  \binom{2 + x - 1}{x} +2 \log \theta + (x) \log (1-\theta)\\
+\rightarrow \frac{d}{d\theta} l(\theta) &= \frac{2}{\theta} - \frac{x}{1-\theta} = 0\\
+\rightarrow \theta &= \frac{2}{2+x} = \frac{2}{7}\  \text{, car X = 5}\\
+\end{aligned}
+$$
+Cette valeur pourra être réutilisée en c) afin de comparer la méthode du maximum de vraisemblance et celle de l'estimateur de Bayes.
 
 ## b)
+Voici la fonction de densité de $\Theta \sim \text{Beta}(2,2)$:
 
-```{r,echo = F}
+```{r,echo = F,fig.height = 4, fig.width = 5, fig.align = "center"}
 beta <- list()
 beta$a <- 2
 beta$b <- 2
 
 val <- seq(0,1,length = 100)
-fx <- pbeta(val,beta$a,beta$b)
-plot(val,fx,type = "l", lty=1, xlab="x",ylab = expression(f[X](x)))
+fx <- dbeta(val,beta$a,beta$b)
+plot(val,fx,type = "l", lty=1, xlab="x",ylab = expression(f[theta](x)))
 ```
+\newpage
+et voici ca fonction de répartition
+```{r,echo = F,fig.height = 4, fig.width = 5, fig.align = "center"}
+beta <- list()
+beta$a <- 2
+beta$b <- 2
 
+val <- seq(0,1,length = 100)
+px <- pbeta(val,beta$a,beta$b)
+plot(val,px,type = "l", lty=1, xlab="x",ylab = expression(F[theta](x)))
+```
 ## c)
-
+Tout d'abord, il est possible de trouver la loi a posteriori de la façon suivante :
+On sait que
+$$
+f_{\theta}(\theta) = \frac{\Gamma(4)}{\Gamma(2)\Gamma(2)}\theta (1-\theta)
+$$
+On sait également que
+$$
+f_{\Theta|X}(\theta|x) = \frac{f_{X|\Theta}(x|\theta)f_\Theta(\theta)}{f_X(x)}\\
+$$
+Donc,
 $$
 \begin{aligned}
-f_{\Theta|X}(\theta|x) &= \frac{f_{X|\Theta}(x|\theta)f_\Theta(\theta)}{f_X(x)}\\
-&= \frac{\binom{1+x}{x}\theta^2(1-\theta)^x\frac{1}{B(2,2)}\theta(1-\theta)}{f_X(x)}\\
-&= \frac{\binom{1+x}{x}\theta^3(1-\theta)^{x+1}\frac{1}{B(2,2)}}{f_X(x)}\\
+&= \frac{\binom{1+x}{x}\theta^2(1-\theta)^x\frac{\Gamma(4)}{\Gamma(2)\Gamma(2)}\theta(1-\theta)}{f_X(x)}\\
+&= \frac{\binom{1+x}{x}\theta^3(1-\theta)^{x+1}\frac{\Gamma(4)}{\Gamma(2)\Gamma(2)}}{f_X(x)} \\
+\end{aligned}
+$$
+Ici, pas besoin d'évaluer l'intégrale ,car on sait qu'il s'agit d'une distribution de probabilité, donc l'intégrale contiendra  seulement les termes manquants à la densité. On peut donc dire que 
+$$
+\begin{aligned}
 &\propto \theta^3(1-\theta)^{x+1}\\
 \rightarrow \Theta|X &\sim \text{Beta}(4,x+2)\\
 \rightarrow E[\Theta|X] &= \frac{4}{4+7} = 0.\overline{36}
 \end{aligned}
 $$
+On voit donc que la valeur de l'estimateur bayésien est très près de la valeur de l'estimateur du maximum de vraisemblance. En effet, on observe une différence de `r 4/11 - 2/7`. Afin de choisir l'un des deux estimateurs, il serait intéressant d'avoir davantage de valeurs disponibles et de comparer la variance de ces deux estimateurs.
 
 ## d)
-```{r}
+Il serait intéressant de vérifier les valeurs calculés plus tôt de façon en trouvant leur valeur empirique à partir de simulations.Pour ce faire, on a simulé un nombre suffisant de fois la variable aléatoire $\Theta|X$ et on a ensuite calculé l'espérance empirique de cette simulation selon différents n ce qui permet d'obtenir le tableau suivant: 
+```{r,echo=F,eval=T}
 beta_post <- list()
 beta_post$a <- 4
 beta_post$b <- 7
 
-n <- 1e6
-simul <- rbeta(n,beta_post$a,beta_post$b)
-mean(simul)
+n <- c(100000,500000,5000000)
+simul <- lapply(n,function(i)rbeta(i,beta_post$a,beta_post$b))
+mean_bayes <- sapply(1:3,function(i) mean(simul[[i]]))
 ```
-
+On obtient donc les valeurs suivantes:
+\begin{table}[!htbp] \centering 
+  \caption{Valeur empirique de $\hat\theta$} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}} c|ccc} 
+Nombre de simulations & $1\times10^5$  & $5 \times 10^5$ & $5 \times 10^6$\\
+\\[-1.8ex]
+\hline \\[-1.8ex] 
+Valeur de $\hat\theta$ & $`r mean_bayes[1]`$ & $`r mean_bayes[2]`$ & $`r mean_bayes[3]`$
+\end{tabular} 
+\end{table}
+De plus, il est possible de remarquer que plus la taille de l'échantillon est grande, plus la valeur empirique est près de la théorie. Or, ceci s'explique par la loi des grands nombres.Ainsi, avec un échantillon de taille m = 5 millions , l'approximation est très bonne.
