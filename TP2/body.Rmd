@@ -404,8 +404,8 @@ $$
 On voit donc que la valeur de l'estimateur bayésien est très près de la valeur de l'estimateur du maximum de vraisemblance. En effet, on observe une différence de `r 4/11 - 2/7`. Afin de choisir l'un des deux estimateurs, il serait intéressant d'avoir davantage de valeurs disponibles et de comparer la variance de ces deux estimateurs.
 
 ## d)
-Il serait intéressant de vérifier les valeurs calculés plus tôt de façon en trouvant leur valeur empirique à partir de simulations.Pour ce faire, on a simulé un nombre suffisant de fois la variable aléatoire $\Theta|X$ et on a ensuite calculé l'espérance empirique de cette simulation selon différents n ce qui permet d'obtenir le tableau suivant: 
-```{r,echo=F,eval=T}
+Il serait intéressant de vérifier les valeurs calculés plus tôt de façon en trouvant leur valeur empirique à partir de simulations.Pour ce faire, on a simulé un nombre suffisant de fois la variable aléatoire $\Theta|X$ et on a ensuite calculé l'espérance empirique de cette simulation selon différents n de la façon suivante: 
+```{r,echo=T,eval=T}
 beta_post <- list()
 beta_post$a <- 4
 beta_post$b <- 7
@@ -414,7 +414,7 @@ n <- c(100000,500000,5000000)
 simul <- lapply(n,function(i)rbeta(i,beta_post$a,beta_post$b))
 mean_bayes <- sapply(1:3,function(i) mean(simul[[i]]))
 ```
-On obtient donc les valeurs suivantes:
+ce qui permet d'obtenir les valeurs suivantes:
 \begin{table}[!htbp] \centering 
   \caption{Valeur empirique de $\hat\theta$} 
   \label{} 
